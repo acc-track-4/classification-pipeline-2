@@ -1,0 +1,19 @@
+Model Name: resnet18
+Drop Rate: 0.05
+Epochs Trained: 10
+Image Size: (32, 32)
+Learning Rate: 0.005
+BCE Thresh: 0.2
+Smoothing: 0.1
+Mixup: 0.2
+Cutmix: 1.0
+Batch Size: 4096
+Loss: BinaryCrossEntropy()
+Auto Augment: rand-m7-mstd0.5-inc1
+Data Mean: (0.485, 0.456, 0.406)
+Data Std: (0.229, 0.224, 0.225)
+Optimizer: lookahead_AdamW
+Weight Decay: 0.01
+Best Accuracy: tensor(0.0125)
+Best Acc-Precision: tensor(0.0125)
+Best Acc-Recall: tensor(0.0125)
