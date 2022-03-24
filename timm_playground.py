@@ -266,8 +266,7 @@ def main(data_path):
     )
 
     # As we are using Mixup, we can use BCE during training and CE for evaluation
-    train_loss_fn = timm.loss.BinaryCrossEntropy(
-        target_threshold=bce_target_thresh, smoothing=smoothing
+    train_loss_fn = torch.nn.CrossEntropyLoss(
     )
     validate_loss_fn = torch.nn.CrossEntropyLoss()
 
