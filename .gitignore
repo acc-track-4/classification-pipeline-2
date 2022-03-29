@@ -2,3 +2,5 @@ dataset/
 __pycache__/
 *.mp4
 images/
+experiment-images/
+models/
