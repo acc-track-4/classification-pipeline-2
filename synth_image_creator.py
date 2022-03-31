@@ -7,7 +7,7 @@ import numpy as np
 from tqdm import tqdm
 from PIL import Image
 
-orignal_synth_images = images = glob.glob('syn_image_train/*')
+orignal_synth_images = images = glob.glob('./dataset/syn_image_train/*')
 
 def make_rectangular_gradient(innerColor, outerColor, imgsize=(250, 250)):
 
@@ -58,7 +58,7 @@ def make_circular_gradient(innerColor, outerColor, imgsize=(250, 250)):
             image.putpixel((x, y), (int(r), int(g), int(b)))
     return np.array(image)
 
-os.makedirs('synthetic_images_with_tray_bg', exist_ok=True)
+os.makedirs('./dataset/synthetic_images_with_tray_bg', exist_ok=True)
 
 rectangular_white_gray = make_rectangular_gradient([255, 255,255], [128, 128, 128])
 rectangular_gray_white = make_rectangular_gradient([128, 128, 128],  [255, 255,255])
@@ -66,10 +66,12 @@ circular_white_gray = make_circular_gradient([128, 128, 128],  [255, 255,255])
 circular_gray_white = make_circular_gradient([255, 255,255], [128, 128, 128])
 
 for image_path in tqdm(images, total=len(images)):
-    label_path = 'segmentation_labels/' + image_path.split("/")[-1].split(".jpg")[0] + '_seg.jpg'
+    label_path = './dataset/segmentation_labels/' + image_path.split("/")[-1].split(".jpg")[0] + '_seg.jpg'
     image = cv2.imread(image_path)
     mask = cv2.imread(label_path)
-
+    if image is None or mask is None:
+        continue
+    
     mask = mask == 0
     p = random.random()
     if p < .25:
@@ -82,4 +84,4 @@ for image_path in tqdm(images, total=len(images)):
         tray_background = cv2.resize(circular_gray_white, image.shape[:2][::-1])
 
     image[mask] = tray_background[mask]
-    cv2.imwrite(f"synthetic_images_with_tray_bg/{image_path.split('/')[-1]}", image)
+    cv2.imwrite(f"./dataset/synthetic_images_with_tray_bg/{image_path.split('/')[-1]}", image)
