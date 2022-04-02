@@ -1,8 +1,9 @@
 import argparse
 from pathlib import Path
+from pyexpat import model
 from statistics import mode
 from black import out
-from fastNLP import EarlyStopCallback
+from fastNLP import CrossEntropyLoss, EarlyStopCallback
 from pyrsistent import b
 
 import numpy as np
@@ -146,8 +147,17 @@ class TimmMixupTrainer(Trainer):
 
     def calculate_train_batch_loss(self, batch):
         xb, yb = batch
-        mixup_xb, mixup_yb = self.mixup_fn(xb, yb)
-        return super().calculate_train_batch_loss((mixup_xb, mixup_yb))
+        # mixup_xb, mixup_yb = self.mixup_fn(xb, yb)
+        # return super().calculate_train_batch_loss((mixup_xb, mixup_yb))
+
+        model_outputs = self.model(xb)
+        train_loss = self.loss_func(model_outputs, yb)
+
+        return {
+            "loss": train_loss,
+            "model_outputs": model_outputs,
+            "batch_size": yb.size(0),
+        }
 
     def train_epoch_end(
         self,
@@ -204,7 +214,7 @@ def main(data_path):
     smoothing = 0.1
     mixup = 0.2
     cutmix = 1.0
-    batch_size = 128
+    batch_size = 32
     bce_target_thresh = 0.2
     num_epochs = 50
     early_stop = 5
@@ -242,8 +252,8 @@ def main(data_path):
 
     # Load data config associated with the model to use in data augmentation pipeline
     data_config = timm.data.resolve_data_config({}, model=model, verbose=True)
-    data_mean = data_config["mean"]
-    data_std = data_config["std"]
+    data_mean = (0.4124, 0.3856, 0.3493)
+    data_std = (0.2798, 0.2703, 0.2726)
     log.data_mean = str(data_mean)
     log.data_std = str(data_std)
     # Create training and validation datasets
@@ -266,8 +276,10 @@ def main(data_path):
     )
 
     # As we are using Mixup, we can use BCE during training and CE for evaluation
-    train_loss_fn = torch.nn.CrossEntropyLoss(
-    )
+    # train_loss_fn = timm.loss.BinaryCrossEntropy(target_threshold=bce_target_thresh, smoothing=smoothing)
+    
+    # train_loss_fn = timm.loss.LabelSmoothingCrossEntropy(smoothing=smoothing)
+    train_loss_fn = torch.nn.CrossEntropyLoss()
     validate_loss_fn = torch.nn.CrossEntropyLoss()
 
     log.loss_name = str(train_loss_fn)
