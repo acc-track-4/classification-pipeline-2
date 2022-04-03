@@ -147,17 +147,17 @@ class TimmMixupTrainer(Trainer):
 
     def calculate_train_batch_loss(self, batch):
         xb, yb = batch
-        # mixup_xb, mixup_yb = self.mixup_fn(xb, yb)
-        # return super().calculate_train_batch_loss((mixup_xb, mixup_yb))
+        mixup_xb, mixup_yb = self.mixup_fn(xb, yb)
+        return super().calculate_train_batch_loss((mixup_xb, mixup_yb))
 
-        model_outputs = self.model(xb)
-        train_loss = self.loss_func(model_outputs, yb)
+        # model_outputs = self.model(xb)
+        # train_loss = self.loss_func(model_outputs, yb)
 
-        return {
-            "loss": train_loss,
-            "model_outputs": model_outputs,
-            "batch_size": yb.size(0),
-        }
+        # return {
+        #     "loss": train_loss,
+        #     "model_outputs": model_outputs,
+        #     "batch_size": yb.size(0),
+        # }
 
     def train_epoch_end(
         self,
@@ -212,7 +212,7 @@ def main(data_path):
     image_size = (224, 224)
     lr = 5e-3
     smoothing = 0.1
-    mixup = 0.2
+    mixup = 0.3
     cutmix = 1.0
     batch_size = 32
     bce_target_thresh = 0.2
@@ -276,10 +276,10 @@ def main(data_path):
     )
 
     # As we are using Mixup, we can use BCE during training and CE for evaluation
-    # train_loss_fn = timm.loss.BinaryCrossEntropy(target_threshold=bce_target_thresh, smoothing=smoothing)
+    train_loss_fn = timm.loss.BinaryCrossEntropy(target_threshold=bce_target_thresh, smoothing=smoothing)
     
     # train_loss_fn = timm.loss.LabelSmoothingCrossEntropy(smoothing=smoothing)
-    train_loss_fn = torch.nn.CrossEntropyLoss()
+    # train_loss_fn = torch.nn.CrossEntropyLoss()
     validate_loss_fn = torch.nn.CrossEntropyLoss()
 
     log.loss_name = str(train_loss_fn)
