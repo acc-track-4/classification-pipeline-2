@@ -1,8 +1,11 @@
 black==22.1.0
 fastNLP==0.7.0
 numpy==1.21.0
+opencv_python==4.5.5.64
+Pillow==9.1.0
 pyrsistent==0.17.3
 pytorch_accelerated==0.1.22
 timm==0.5.4
 torch==1.9.1
 torchmetrics==0.7.2
+tqdm==4.62.3
