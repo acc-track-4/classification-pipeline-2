@@ -3,3 +3,5 @@ __pycache__/
 *.mp4
 images/
 experiment-images/
+models/unet_aicityt4.pth
+notebooks/checkpoint/
