@@ -5,3 +5,4 @@ images/
 experiment-images/
 models/unet_aicityt4.pth
 notebooks/checkpoint/
+*.pt
